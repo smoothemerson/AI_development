@@ -13,6 +13,7 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import (
+    GridSearchCV,
     train_test_split,
 )
 from sklearn.pipeline import Pipeline
@@ -29,6 +30,11 @@ df_transactions.rename(
     inplace=True,
 )
 df_transactions.drop(columns=["Cliente"], inplace=True)
+
+df_transactions["Horario"] = pd.to_datetime(
+    df_transactions["Horario_da_Transacao"]
+).dt.hour
+df_transactions.drop(columns=["Horario_da_Transacao"], inplace=True)
 
 # %%
 df_transactions.head(5)
@@ -121,11 +127,15 @@ estatísticas.round(5)
 # As variáveis Horario_da_Transacao e Classe são independentes ----> Qui-quadrado (p-value = 0.49 < 0.05)
 
 # %%
-categorical_features = ["Tipo_de_Transacao", "Horario_da_Transacao"]
+
+
+# %%
+categorical_features = ["Tipo_de_Transacao"]
 numerical_features = [
     "Valor_da_Transacao",
     "Valor_Anterior_a_Transacao",
     "Valor_Apos_a_Transacao",
+    "Horario",
 ]
 
 categorical_transformer = Pipeline(
@@ -148,14 +158,61 @@ preprocessor = ColumnTransformer(
     ]
 )
 
-model_dt = Pipeline(
+parametros = {
+    "classifier__criterion": [
+        "gini",
+        "entropy",
+        "log_loss",
+    ],
+    "classifier__max_depth": [None, 5, 10, 20, 30],
+    "classifier__min_samples_split": [
+        2,
+        5,
+        10,
+        20,
+        30,
+        40,
+        50,
+    ],
+    "classifier__min_samples_leaf": [
+        1,
+        2,
+        5,
+        10,
+        20,
+    ],
+    "classifier__max_features": [
+        None,
+        "sqrt",
+        "log2",
+    ],
+    "classifier__splitter": [
+        "best",
+        "random",
+    ],
+    "classifier__class_weight": [
+        None,
+        "balanced",
+    ],
+}
+
+modelo_pipeline = Pipeline(
     steps=[
         ("preprocessor", preprocessor),
         (
             "classifier",
-            DecisionTreeClassifier(class_weight="balanced", random_state=51),
+            DecisionTreeClassifier(random_state=42),
         ),
     ]
+)
+
+model_dt = GridSearchCV(
+    estimator=modelo_pipeline,
+    param_grid=parametros,
+    scoring="f1",
+    cv=5,
+    verbose=1,
+    n_jobs=-1,
 )
 
 # %%
@@ -171,13 +228,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 model_dt.fit(X_train, y_train)
 
 # %%
-y_pred = model_dt.predict(X_test)
+print("Melhores parâmetros:", model_dt.best_params_)
+modelo_otimizado = model_dt.best_estimator_
+y_pred = modelo_otimizado.predict(X_test)
 
 # %%
 classification_report_str = classification_report(y_test, y_pred)
-recall_baseline = recall_score(y_test, y_pred, average="macro")
 print(f"Relatório de Classificação:\n{classification_report_str}")
-print(f"Recall:\n{recall_baseline}")
 
 # %%
 confusion_matrix_modelo_baseline = confusion_matrix(y_test, y_pred)

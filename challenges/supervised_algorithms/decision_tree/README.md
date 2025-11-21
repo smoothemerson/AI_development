@@ -21,38 +21,38 @@ Após a implementação do modelo de árvore de decisão, os resultados obtidos 
 
 Com base nos dados de teste, a matriz de confusão apresentou os seguintes resultados:
 
-- **Verdadeiros Positivos (VP)**: 51 fraudes detectadas corretamente
-- **Falsos Negativos (FN)**: 381 fraudes não detectadas pelo modelo
-- **Verdadeiros Negativos (VN)**: 2.972 transações legítimas classificadas corretamente
-- **Falsos Positivos (FP)**: 496 transações legítimas classificadas erroneamente como fraude
+- **Verdadeiros Positivos (VP)**: 193 fraudes detectadas corretamente
+- **Falsos Negativos (FN)**: 239 fraudes não detectadas pelo modelo
+- **Verdadeiros Negativos (VN)**: 2.615 transações legítimas classificadas corretamente
+- **Falsos Positivos (FP)**: 853 transações legítimas classificadas erroneamente como fraude
 
 **Métricas Calculadas:**
-- **Sensibilidade (Recall)**: 11,81% - O modelo detecta apenas 1 em cada 9 fraudes reais
-- **Especificidade**: 85,70% - O modelo identifica corretamente a maioria das transações legítimas
+- **Sensibilidade (Recall)**: 44,68% - O modelo detecta aproximadamente 4 em cada 9 fraudes reais
+- **Especificidade**: 75,40% - O modelo identifica corretamente a maioria das transações legítimas
 
 ### Análise Crítica do Desempenho
 
 #### 🔍 **Limitações Críticas Identificadas**
 
-**1. Baixa Capacidade de Detecção de Fraudes**
-O modelo apresenta uma **sensibilidade extremamente baixa (11,81%)**, significando que apenas 51 das 432 fraudes reais foram detectadas. Esta é uma limitação crítica para um sistema de detecção de fraudes, pois:
-- **88,19% das fraudes passam despercebidas**, representando um risco financeiro significativo
-- A instituição fica exposta a perdas substanciais por fraudes não detectadas
+**1. Capacidade Moderada de Detecção de Fraudes**
+O modelo apresenta uma **sensibilidade moderada (44,68%)**, significando que 193 das 432 fraudes reais foram detectadas. Representa uma limitação para um sistema de detecção de fraudes, pois:
+- **55,32% das fraudes ainda passam despercebidas**, representando um risco financeiro significativo
+- A instituição permanece exposta a perdas por fraudes não detectadas
 - A confiança dos clientes pode ser comprometida por transações fraudulentas não bloqueadas
 
 **2. Desbalanceamento Severo entre Classes**
 O dataset evidencia um forte desbalanceamento, com fraudes representando apenas cerca de 11% do total de transações. Esta característica levou o modelo a desenvolver um viés conservador, priorizando a classificação da classe majoritária (transações legítimas).
 
 **3. Alta Taxa de Falsos Alarmes**
-Embora a especificidade seja razoável (85,70%), ainda significa que **14,30% das transações legítimas são incorretamente sinalizadas como fraude**. Isso resulta em:
-- Inconvenientes para clientes legítimos
-- Sobrecarga operacional para análise manual
+A especificidade de 75,40% significa que **24,60% das transações legítimas são incorretamente sinalizadas como fraude**. Isso resulta em:
+- Inconvenientes significativos para clientes legítimos
+- Sobrecarga operacional considerável para análise manual
 - Possível perda de clientes por bloqueios desnecessários
 
 #### ✅ **Aspectos Positivos**
 
-**Boa Especificidade**
-O modelo demonstra capacidade adequada para identificar transações legítimas, com 85,70% de acerto nesta categoria, reduzindo bloqueios desnecessários na maioria dos casos.
+**Boa na Detecção de Fraudes**
+O modelo demonstra uma boa capacidade de detectar fraudes, detectando quase metade das fraudes reais, o que representa um avanço importante no sistema de segurança.
 
 #### 🚀 **Recomendações para Melhoria**
 
@@ -77,4 +77,4 @@ O modelo demonstra capacidade adequada para identificar transações legítimas,
 
 ### Conclusão
 
-O modelo atual, embora apresente boa especificidade, **não atende aos requisitos críticos de um sistema de detecção de fraudes eficaz** devido à baixa sensibilidade. É fundamental implementar as melhorias sugeridas, priorizando o aumento da capacidade de detecção de fraudes, mesmo que isso resulte em um ligeiro aumento de falsos positivos, considerando que o custo de uma fraude não detectada é significativamente maior que o custo operacional de verificar um falso alarme.
+O modelo atual apresenta **boa detecção de fraudes** com sensibilidade de 44,68%, porém ainda enfrenta desafios importantes com alta taxa de falsos positivos. É fundamental implementar as melhorias sugeridas para encontrar um equilíbrio mais adequado entre detecção de fraudes e redução de falsos alarmes, considerando que ambos os aspectos são críticos para a eficácia operacional do sistema.
