@@ -10,7 +10,6 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
     classification_report,
     confusion_matrix,
-    recall_score,
 )
 from sklearn.model_selection import (
     GridSearchCV,
