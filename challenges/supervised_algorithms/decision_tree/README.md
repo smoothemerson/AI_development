@@ -17,3 +17,64 @@ O dataset fornecido contém informações sobre transações bancárias realizad
 
 ## Resultados:
 Após a implementação do modelo de árvore de decisão, os resultados obtidos foram os seguintes:
+### Matriz de Confusão e Métricas de Desempenho
+
+Com base nos dados de teste, a matriz de confusão apresentou os seguintes resultados:
+
+- **Verdadeiros Positivos (VP)**: 51 fraudes detectadas corretamente
+- **Falsos Negativos (FN)**: 381 fraudes não detectadas pelo modelo
+- **Verdadeiros Negativos (VN)**: 2.972 transações legítimas classificadas corretamente
+- **Falsos Positivos (FP)**: 496 transações legítimas classificadas erroneamente como fraude
+
+**Métricas Calculadas:**
+- **Sensibilidade (Recall)**: 11,81% - O modelo detecta apenas 1 em cada 9 fraudes reais
+- **Especificidade**: 85,70% - O modelo identifica corretamente a maioria das transações legítimas
+
+### Análise Crítica do Desempenho
+
+#### 🔍 **Limitações Críticas Identificadas**
+
+**1. Baixa Capacidade de Detecção de Fraudes**
+O modelo apresenta uma **sensibilidade extremamente baixa (11,81%)**, significando que apenas 51 das 432 fraudes reais foram detectadas. Esta é uma limitação crítica para um sistema de detecção de fraudes, pois:
+- **88,19% das fraudes passam despercebidas**, representando um risco financeiro significativo
+- A instituição fica exposta a perdas substanciais por fraudes não detectadas
+- A confiança dos clientes pode ser comprometida por transações fraudulentas não bloqueadas
+
+**2. Desbalanceamento Severo entre Classes**
+O dataset evidencia um forte desbalanceamento, com fraudes representando apenas cerca de 11% do total de transações. Esta característica levou o modelo a desenvolver um viés conservador, priorizando a classificação da classe majoritária (transações legítimas).
+
+**3. Alta Taxa de Falsos Alarmes**
+Embora a especificidade seja razoável (85,70%), ainda significa que **14,30% das transações legítimas são incorretamente sinalizadas como fraude**. Isso resulta em:
+- Inconvenientes para clientes legítimos
+- Sobrecarga operacional para análise manual
+- Possível perda de clientes por bloqueios desnecessários
+
+#### ✅ **Aspectos Positivos**
+
+**Boa Especificidade**
+O modelo demonstra capacidade adequada para identificar transações legítimas, com 85,70% de acerto nesta categoria, reduzindo bloqueios desnecessários na maioria dos casos.
+
+#### 🚀 **Recomendações para Melhoria**
+
+**1. Estratégias de Balanceamento de Classes**
+- Aplicar **undersampling** inteligente da classe majoritária
+- Utilizar **ensemble methods** com diferentes estratégias de amostragem
+
+**2. Otimização de Algoritmos**
+- Experimentar **Random Forest** com parâmetro `class_weight='balanced'`
+- Implementar **XGBoost** com ajuste de `scale_pos_weight`
+- Explorar algoritmos baseados em **detecção de anomalias**
+
+**3. Otimização de Métricas e Threshold**
+- Focar na otimização do **F1-score** em vez da acurácia geral
+- Implementar **threshold customizado** que priorize a detecção de fraudes
+- Utilizar **validação cruzada estratificada** para melhor avaliação
+
+**4. Métricas de Avaliação Complementares**
+- Analisar **curva ROC** e **AUC** para melhor compreensão do desempenho
+- Implementar **curva Precision-Recall** específica para classes desbalanceadas
+- Calcular **custo-benefício** considerando perdas financeiras reais
+
+### Conclusão
+
+O modelo atual, embora apresente boa especificidade, **não atende aos requisitos críticos de um sistema de detecção de fraudes eficaz** devido à baixa sensibilidade. É fundamental implementar as melhorias sugeridas, priorizando o aumento da capacidade de detecção de fraudes, mesmo que isso resulte em um ligeiro aumento de falsos positivos, considerando que o custo de uma fraude não detectada é significativamente maior que o custo operacional de verificar um falso alarme.

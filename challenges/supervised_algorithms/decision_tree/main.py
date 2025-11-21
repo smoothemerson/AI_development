@@ -1,27 +1,23 @@
 # %%
-import joblib
-import matplotlib.pyplot as plt
-import optuna
 import pandas as pd
 import pingouin as pg
 import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.io as pio
 from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
     classification_report,
     confusion_matrix,
+    recall_score,
 )
 from sklearn.model_selection import (
-    StratifiedKFold,
-    cross_val_predict,
-    cross_val_score,
-    cross_validate,
+    train_test_split,
 )
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.tree import DecisionTreeClassifier
 
 pio.renderers.default = "png"
 
@@ -123,3 +119,69 @@ estatísticas.round(5)
 
 # As variáveis Tipo_de_Transacao e Classe são dependentes ----> Qui-quadrado (p-value = 0.034 < 0.05)
 # As variáveis Horario_da_Transacao e Classe são independentes ----> Qui-quadrado (p-value = 0.49 < 0.05)
+
+# %%
+categorical_features = ["Tipo_de_Transacao", "Horario_da_Transacao"]
+numerical_features = [
+    "Valor_da_Transacao",
+    "Valor_Anterior_a_Transacao",
+    "Valor_Apos_a_Transacao",
+]
+
+categorical_transformer = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("onehot", OneHotEncoder(handle_unknown="ignore")),
+    ],
+)
+numerical_transformer = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("standard", StandardScaler()),
+    ]
+)
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", numerical_transformer, numerical_features),
+        ("cat", categorical_transformer, categorical_features),
+    ]
+)
+
+model_dt = Pipeline(
+    steps=[
+        ("preprocessor", preprocessor),
+        (
+            "classifier",
+            DecisionTreeClassifier(class_weight="balanced", random_state=51),
+        ),
+    ]
+)
+
+# %%
+X = df_transactions.drop(columns=["Classe"], axis=1)
+y = df_transactions["Classe"]
+
+# %%
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=51
+)
+
+# %%
+model_dt.fit(X_train, y_train)
+
+# %%
+y_pred = model_dt.predict(X_test)
+
+# %%
+classification_report_str = classification_report(y_test, y_pred)
+recall_baseline = recall_score(y_test, y_pred, average="macro")
+print(f"Relatório de Classificação:\n{classification_report_str}")
+print(f"Recall:\n{recall_baseline}")
+
+# %%
+confusion_matrix_modelo_baseline = confusion_matrix(y_test, y_pred)
+disp_modelo_baseline = ConfusionMatrixDisplay(confusion_matrix_modelo_baseline)
+disp_modelo_baseline.plot()
+
+# %%
